@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+
+<title>Hello WebSocket</title>
+    <head>
+        <script src="/webjars/jquery/jquery.min.js"></script>
+        <script type="text/javascript"  th:src="@{/static/js/echarts.min.js}"></script>
+        <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link th:href="@{/static/css/main.css}" rel="stylesheet">
+        <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+        <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<!--
+        <script scr="/webjars/bootstrap/js/bootstrap.min.js"></script>
+-->
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript" th:src="@{/static/screens/screen1/options/common.js}"></script>
+        <script th:src="@{/static/js/app.js}"></script>
+
+    </head>
+<style>
+    .mybtn{
+        margin: 2%;
+        margin-left: 0%;
+    }
+    #chengshianniu button{
+        margin: 2%;
+        margin-left: 0%;
+    }
+</style>
+<body>
+<script type="text/javascript">
+    autoConnect();
+</script>
+<br>
+<!--选择城市-->
+<div class="container">
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header">
+                <a class="card-link" data-toggle="collapse" href="#collapseOne">
+                    城市列表
+                </a>
+            </div>
+            <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                <div class="card-body">
+                    <div id="chengshianniu" class="btn-group container" style="display: flex; flex-flow: row wrap; justify-content: center">
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('杭州市')">杭州</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('金华市')">金华</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('舟山市')">舟山</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('衢州市')">衢州</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('湖州市')">湖州</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('丽水市')">丽水</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('嘉兴市')">嘉兴</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('绍兴市')">绍兴</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('宁波市')">宁波</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('温州市')">温州</button>
+                        <button type="button" class="btn btn-primary btn-info" onclick="sendCity('台州市')">台州</button>
+                        <button type="button" class="btn btn-primary btn-info" >刷新</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="container">
+
+    <div id="controlBlock1">
+        <script>
+            for(let i = 0; i < viewIds[1].length; i ++) {
+                let myDiv = document.getElementById('controlBlock1');
+                let button = document.createElement("input");
+                button.setAttribute("type", "button");
+                button.setAttribute("value", viewIds[1][i]);
+                button.style.width = "12%";
+                button.setAttribute("onclick", "sendControl(this.value, 1)");
+                myDiv.appendChild(button);
+            }
+        </script>
+    </div>
+
+    <div id="controlBlock2">
+
+    </div>
+
+    <div id="controlBlock3" class="card-body" style="text-align: center; display: flex; flex-flow: row wrap; justify-content: center;">
+<!--        <script>
+            for(let i = 0; i < viewIds[3].length; i++) {
+                let myDiv = document.getElementById('controlBlock3');
+                let button = document.createElement("input");
+                button.setAttribute("type", "button");
+                button.setAttribute("value", viewIds[3][i]);
+                button.style.width = "12%";
+                button.setAttribute("onclick", "sendControl(this.value, 3)");
+                myDiv.appendChild(button);
+            }
+        </script>-->
+
+        <script>
+            for(let i = 0; i < viewIds[3].length; i++) {
+                let myDiv = document.getElementById('controlBlock3');
+                let button = document.createElement("input");
+                button.setAttribute("type", "button");
+                button.setAttribute("value", viewIds[3][i]);
+                button.className = "btn btn-info mybtn";
+                //button.style.width = "12%";
+                button.setAttribute("onclick", "sendControl(this.value, 3)");
+                myDiv.appendChild(button);
+            }
+        </script>
+
+    </div>
+
+    <div id="controlBlock4"></div>
+    <div id="controlBlock5"></div>
+
+    <div id="controlBlock6" class="card-body" style="text-align: center; display: flex; flex-flow: row wrap; justify-content:center;">
+        <script>
+            for(let i = 0; i < viewIds[6].length; i++) {
+                let myDiv = document.getElementById('controlBlock6');
+                let button = document.createElement("input");
+                button.setAttribute("type", "button");
+                button.setAttribute("value", viewIds[6][i]);
+                button.className = "btn btn-info mybtn";
+                //button.style.width = "12%";
+                //button.style.margin="2% 2% 0% 2%";
+                button.setAttribute("onclick", "sendControl(this.value, 6)");
+                myDiv.appendChild(button);
+            }
+        </script>
+        <button class="btn btn-info mybtn"  onclick="sendChangeStyle(6)">展示类型</button>
+
+    </div>
+
+    <div id="controlBlock7" class="card-body" style="text-align: center ;display: flex; flex-flow: row wrap; justify-content: center;">
+        <script>
+            for(let i = 0; i < viewIds[7].length; i++) {
+                let myDiv = document.getElementById('controlBlock7');
+                let button = document.createElement("input");
+                button.setAttribute("type", "button");
+                button.setAttribute("value", viewIds[7][i]);
+                button.className = "btn btn-info mybtn";
+                //button.style.width = "12%";
+                button.setAttribute("onclick", "sendControl(this.value, 7)");
+
+                myDiv.appendChild(button);
+            }
+        </script>
+        <button class="btn btn-info mybtn"  onclick="sendChangeStyle(7)">展示类型</button>
+    </div>
+
+</div>
+
+</body>
+
+
+</html>

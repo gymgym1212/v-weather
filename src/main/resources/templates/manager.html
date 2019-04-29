@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理</title>
+
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+    <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+<body>
+    <!--导航栏-->
+    <div>
+        <nav class="navbar navbar-expand-sm bg-info navbar-dark">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/screen/1">浙江省气象监测系统</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/menu">菜单</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin">控制</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">管理</a>
+                </li>
+            </ul>
+        </nav>
+    </div><br><br>
+
+    <div class="container">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th class="text-info">大屏编号</th>
+            <th class="text-info">大屏名字</th>
+            <th class="text-info">大屏地址</th>
+            <th class="text-info">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+
+        <tr th:each="s: ${screens}">
+            <td th:text="${s.screen_id}"></td>
+            <td th:text="${s.screen_name}"></td>
+            <td><a th:text="${s.screen_url}" th:href="@{${s.screen_url}}"></a></td>
+            <td>
+                <a th:href="@{'/setting?screenId=' + ${s.screen_id}}"><button class="btn btn-info">配置大屏</button></a>
+                <a th:href="@{'/delete_screen?screenId=' + ${s.screen_id}}"><button class="btn btn-secondary" th:if="${s.id} ne 1 and ${s.id} ne 2">删除大屏</button></a>
+            </td>
+        </tr>
+
+
+
+        </tbody>
+    </table>
+
+    <hr>
+
+    <form action="/create_screen" method="POST" >
+        <div class="form-group">
+            <label for="title">标题:</label>
+            <input type="text" class="form-control" id="title" name="screen_name" placeholder="请输入大屏标题">
+        </div>
+        <div class="form-group">
+            <label for="style">可显示图表个数:</label>
+            <input type="text" class="form-control" id="style" name="screen_blocks" placeholder="请输入可显示图表个数(1~7)">
+        </div>
+        <button type="submit" class="btn btn-info">新建大屏</button>
+    </form>
+</div>
+</body>
+
+</html>

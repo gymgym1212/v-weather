@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <title>scene2</title>
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            position: relative;
+        //background-color: #3a4982;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
+
+        #output {
+            width: 100%;
+            height: 100%;
+        }
+
+        .color {
+            width: 120px;
+            height: 20px;
+            margin: 0 auto;
+            position: fixed;
+            left: 50%;
+            margin-left: -60px;
+            bottom: 20px;
+        }
+
+        .color li {
+            float: left;
+            margin: 0 5px;
+            width: 20px;
+            height: 20px;
+            background: #ccc;
+            box-shadow: 0 0 4px #FFF;
+            list-style: none;
+            cursor: pointer;
+        }
+
+        .color li:nth-child(1) {
+            background: #002c4a;
+        }
+
+        .color li:nth-child(2) {
+            background: #35ac03;
+        }
+
+        .color li:nth-child(3) {
+            background: #ac0908;
+        }
+
+        .color li:nth-child(4) {
+            background: #18bbff;
+        }
+
+        .block {
+            color: white;
+            border-radius: 5px;
+        //box-shadow: 2px 2px 2px black;
+        //background-color: #242b47;
+        //background-color: #112042;
+        /蓝/background-color: rgba(17, 32, 66, 0.3);
+        /浅蓝/background-color: rgb(0, 0, 102, 0.3);
+        /绿/background-color: rgb(0, 51, 0, 0.3);
+        /红/background-color: rgb(153, 0, 51, 0.3);
+        background-color: rgb(0, 0, 0, 0.2);
+
+        //opacity: 0.6;
+
+        }
+
+        #date_block {
+            position: fixed;
+            left: 1.5%;
+            color: white;
+        }
+
+
+        #block1 {
+            position: fixed;
+            left: 3%;
+            top: 47%;
+            width: 48%;
+            height: 50%;
+        }
+
+        #block2 {
+            position: fixed;
+            left: 3%;
+            top: 3%;
+            width: 24%;
+            height: 40%;
+        }
+        #block4 {
+            position: fixed;
+            left: 29%;
+            top: 3%;
+            width: 22%;
+            height: 40%;
+        }
+
+        #block3 {
+            position: fixed;
+            left: 53%;
+            top: 3%;
+            width: 45%;
+            height: 94%;
+        }
+
+
+
+
+
+        #current_time {
+            font-size: 3vw;
+        }
+
+        #current_date {
+            font-size: 1vw;
+        }
+
+        #current_day {
+            font-size: 1vw;
+        }
+
+
+        #table_block {
+            font-size: 1vw;
+        }
+
+        #small_font {
+            font-size: 1vm;
+        }
+    </style>
+
+    <script type="text/javascript" th:src="@{/static/js/jquery.js}"></script>
+    <script type="text/javascript"  th:src="@{/static/js/echarts.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/echarts-gl.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/dark.js}"></script>
+    <script type="text/javascript"  th:src="@{/static/js/vector.js}"></script>
+
+
+
+
+
+    <script>
+        $(function() {
+            // 初始化 传入dom id
+            var victor = new Victor("container", "output");
+            var theme = [
+                ["#004c80", "#005584"],
+                ["#35ac03", "#3f4303"],
+                ["#ac0908", "#cd5726"],
+                ["#18bbff", "#00486b"]
+            ];
+            // 				var color = theme[1];
+            // 				victor(color).set();
+            $(".color li").each(function(index, val) {
+                var color = theme[index];
+                $(this).mouseover(function() {
+                    victor(color).set();
+                })
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="container">
+    <div id="output"></div>
+</div>
+<!--map-->
+<div class="block" id="block1">
+
+</div>
+
+<div class="block" id="block2">
+
+</div>
+<div class="block" id="block3">
+
+</div>
+<div class="block" id="block4">
+
+</div>
+<!-- <ul class="color">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+-->
+//热力图
+<script type="text/javascript">
+    var hour = ['1', '2', '3', '4', '5', '6', '7',
+        '8', '9', '10'
+    ];
+    var day = ['良', '优', '轻度污染',
+        '中度污染', '重度污染', '严重污染'
+    ];
+
+    var data1 = [];
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 10; j++) {
+            let temp = [];
+            temp.push(i);
+            temp.push(j);
+            temp.push(Math.random() * 10);
+            data1.push(temp);
+        }
+    }
+    data1 = data1.map(function(item) {
+        return [item[1], item[0], item[2] || '-'];
+    });
+
+    var myChart = echarts.init(document.getElementById('block1'));
+    var option1 = {
+        title: {
+            text: "城市污染状况预览",
+            textStyle: {
+                color: 'white'
+            }
+
+        },
+        // tooltip: {
+        // 	position: 'top'
+        // },
+        animation: false,
+        grid: {
+            height: '70%',
+            y: '10%'
+        },
+        xAxis: {
+            type: 'category',
+            data: hour,
+            splitArea: {
+                show: true
+            },
+            axisLine: {
+                lineStyle: {
+                    color: 'white',
+                }
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: day,
+            splitArea: {
+                show: true
+            },
+            axisLine: {
+                lineStyle: {
+                    color: 'white',
+                }
+            }
+        },
+        visualMap: {
+            min: 0,
+            max: 10,
+            calculable: true,
+            orient: 'vertical',
+            right: '2%',
+            bottom: '15%'
+        },
+        series: [{
+            name: 'Punch Card',
+            type: 'heatmap',
+            data: data1,
+            label: {
+                normal: {
+                    show: true
+                }
+            },
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    };
+
+    myChart.setOption(option1, 'dark');
+</script>
+
+
+<script>
+    var myChart3 = echarts.init(document.getElementById('block3'));
+    var hours = ['1', '2', '3', '4', '5', '6', '7',
+        '8', '9', '10'
+    ];
+    var days = ['良', '优', '轻度',
+        '中度', '重度', '严重'
+    ];
+
+    var data = [];
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 6; j++) {
+            temp = []
+            temp.push(j);
+            temp.push(i);
+            temp.push(Math.random() * 10);
+            data.push(temp);
+        }
+    }
+    option3 = {
+        // tooltip: {},
+        title: {
+            text: "城市空气污染等级热力图",
+            textStyle: {
+                color: 'white'
+            }
+
+        },
+        visualMap: {
+            max: 20,
+            inRange: {
+                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43',
+                    '#d73027', '#a50026'
+                ]
+            }
+        },
+        xAxis3D: {
+            type: 'category',
+            data: hours,
+            axisLabel: {
+                interval: 0,
+            }
+        },
+        yAxis3D: {
+            type: 'category',
+            data: days,
+            axisLabel: {
+                interval: 0,
+            }
+        },
+        zAxis3D: {
+            type: 'value'
+        },
+        grid3D: {
+            boxWidth: 120,
+            boxDepth: 60,
+            viewControl: {
+                // projection: 'orthographic'
+            },
+            light: {
+                main: {
+                    intensity: 1.,
+                    shadow: true
+                },
+                ambient: {
+                    intensity: 0.3
+                }
+            },
+            axisLine: {
+                lineStyle: {
+                    color: 'white'
+                },
+                interval: 0,
+            },
+        },
+        series: [{
+            type: 'bar3D',
+            data: data.map(function(item) {
+                return {
+                    value: [item[1], item[0], item[2]],
+                }
+            }),
+            shading: 'lambert',
+
+            label: {
+                textStyle: {
+                    fontSize: 16,
+                    borderWidth: 1
+                }
+            },
+
+            emphasis: {
+                label: {
+                    textStyle: {
+                        fontSize: 20,
+                        color: '#900'
+                    }
+                },
+                itemStyle: {
+                    color: '#900'
+                }
+            }
+        }]
+    }
+    myChart3.setOption(option3);
+</script>
+<!-- ------------------------------------------------------ -->
+<script>
+    var myChart2 = echarts.init(document.getElementById('block2'));
+
+    option2 = {
+        title: {
+            text: '天气状况预览',
+            subtext: '阴晴雨雪霾',
+            x: 'center',
+            textStyle: {
+                color: 'white'
+            }
+        },
+
+
+        series: [{
+            name: '访问来源',
+            type: 'pie',
+            radius: '55%',
+            center: ['50%', '60%'],
+            data: [{
+                value: 335,
+                name: '晴'
+            },
+                {
+                    value: 310,
+                    name: '小雨'
+                },
+                {
+                    value: 234,
+                    name: '大雨'
+                },
+                {
+                    value: 135,
+                    name: '霾'
+                },
+                {
+                    value: 1548,
+                    name: '阴'
+                }
+            ],
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    };
+    myChart2.setOption(option2);
+</script>
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------- -->
+<script>
+    var myChart4 = echarts.init(document.getElementById('block4'), 'dark');
+
+    option4 = {
+        title: {
+            text: '动态天气状况对比',
+        },
+        backgroundColor: 'rgba(0,0,0,0)',
+        legend: {
+            data: ['今日AQI', '总和AQI']
+        },
+
+        dataZoom: {
+            show: false,
+            start: 0,
+            end: 100
+        },
+        xAxis: [{
+            type: 'category',
+            boundaryGap: true,
+            data: (function() {
+                var now = new Date();
+                var res = [];
+                var len = 10;
+                while (len--) {
+                    res.unshift(now.toLocaleTimeString().replace(/^\D*/, ''));
+                    now = new Date(now - 2000);
+                }
+                return res;
+            })()
+        },
+            {
+                type: 'category',
+                boundaryGap: true,
+                data: (function() {
+                    var res = [];
+                    var len = 10;
+                    while (len--) {
+                        res.push(10 - len - 1);
+                    }
+                    return res;
+                })()
+            }
+        ],
+        yAxis: [{
+            type: 'value',
+            scale: true,
+            name: '数值',
+            max: 30,
+            min: 0,
+            boundaryGap: [0.2, 0.2]
+        },
+            {
+                type: 'value',
+                scale: true,
+                name: '数值',
+                max: 1200,
+                min: 0,
+                boundaryGap: [0.2, 0.2]
+            }
+        ],
+        series: [{
+            name: '今日AQI',
+            itemStyle:{
+                color:'#b3ffcc',
+            },
+            type: 'bar',
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            data: (function() {
+                var res = [];
+                var len = 10;
+                while (len--) {
+                    res.push(Math.round(Math.random() * 1000));
+                }
+                return res;
+            })()
+        },
+            {
+                name: '往日平均AQI',
+                type: 'line',
+                data: (function() {
+                    var res = [];
+                    var len = 0;
+                    while (len < 10) {
+                        res.push((Math.random() * 10 + 5).toFixed(1) - 0);
+                        len++;
+                    }
+                    return res;
+                })()
+            }
+        ]
+    };
+    myChart4.setOption(option4);
+    count = 11;
+    setInterval(function() {
+        axisData = (new Date()).toLocaleTimeString().replace(/^\D*/, '');
+
+        var data0 = option4.series[0].data;
+        var data1 = option4.series[1].data;
+        data0.shift();
+        data0.push(Math.round(Math.random() * 1000));
+        data1.shift();
+        data1.push((Math.random() * 10 + 5).toFixed(1) - 0);
+
+        option4.xAxis[0].data.shift();
+        option4.xAxis[0].data.push(axisData);
+        option4.xAxis[1].data.shift();
+        option4.xAxis[1].data.push(count++);
+
+        myChart4.setOption(option4);
+    }, 2100);
+</script>
+</body>
+</html>
